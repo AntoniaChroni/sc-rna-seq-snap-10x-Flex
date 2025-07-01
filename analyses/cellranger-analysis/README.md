@@ -20,8 +20,6 @@ Parameters according to the project and analysis strategy will need to be specif
 
 - `multi_config_file`:
     - User needs to define the probe set and information for the library to be demultiplexed. We recommend setting `create_bam_value` to `false` to reduce memory usage per project. Moreover, please note that usually there is not much benefit of creating BAM files from the Flex analysis. Similarly, there is really no general utility of aligning the Flex reads to the genome reference, and that's why for Flex data analysis, the [input of transcriptome reference is optional](https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-multi-config-csv-opts#gene-expression).
-    
-User also need to define `sample_prefix` with the Sample ID used for the samples of the project. Sample IDs should follow a format like: PREFIX001 (e.g., DYE001, ABC-002, XYZ_003). You can specify multiple prefixes if your project uses more than one.
 
 ## Run module on HPC
 
