@@ -72,27 +72,11 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         if df.iloc[0]["Cells"] < 500:
             Warnings = Warnings + "Cells < 500, "
             TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Estimated Number of Cell Partitions"] < 500:
-            Warnings = Warnings + "GRCh38 Estimated Number of Cell Partitions < 500, "
-            TotalWarnings += 1
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Estimated Number of Cell Partitions"] < 500:
-            Warnings = Warnings + "mm10 Estimated Number of Cell Partitions < 500, "
-            TotalWarnings += 1
 
     
     if args.genome == None:
         if df.iloc[0]["Cells"] < 100:
             MajorWarnings = MajorWarnings + "Cells < 100, "
-            TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Estimated Number of Cell Partitions"] < 100:
-            MajorWarnings = MajorWarnings + "GRCh38 Estimated Number of Cell Partitions < 100, "
-            TotalWarnings += 1
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Cells"] < 100:
-            MajorWarnings = MajorWarnings + "mm10 Cells < 100, "
             TotalWarnings += 1
     
     
@@ -144,15 +128,6 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         if df.iloc[0]["Reads confidently mapped to probe set"] < 50:
             Warnings = Warnings + "Reads confidently mapped to probe set < 50%, "
             TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Reads confidently mapped to probe set"] < 50:
-            Warnings = Warnings + "GRCh38 Reads confidently mapped to probe set < 50%, "
-            TotalWarnings += 1
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Reads confidently mapped to probe set"] < 50:
-            Warnings = Warnings + "mm10 Reads confidently mapped to probe set < 50%, "
-            TotalWarnings += 1
-            
             
          
     df["Reads confidently mapped to filtered probe set"] = df["Reads confidently mapped to filtered probe set"].replace({",": ""}, regex=True)  # Remove commas
@@ -162,16 +137,7 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         if df.iloc[0]["Reads confidently mapped to filtered probe set"] < 50:
             MajorWarnings = MajorWarnings + "Reads confidently mapped to filtered probe set < 50%, "
             TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Reads confidently mapped to filtered probe set"] < 50:
-            MajorWarnings = MajorWarnings + "GRCh38 Reads confidently mapped to filtered probe set < 50%, "
-            TotalWarnings += 1
-
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Reads confidently mapped to filtered probe set"] < 50:
-            MajorWarnings = MajorWarnings + "mm10 Reads confidently mapped to filtered probe set < 50%, "
-            TotalWarnings += 1
-
+    
          
     df["Reads mapped to probe set"] = df["Reads mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
     df["Reads mapped to probe set"] = pd.to_numeric(df["Reads mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
@@ -180,17 +146,7 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         if df.iloc[0]["Reads mapped to probe set"] < 50:
             MajorWarnings = MajorWarnings + "Reads mapped to probe set < 50%, "
             TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Reads mapped to probe set"] < 50:
-            MajorWarnings = MajorWarnings + "GRCh38 Reads mapped to probe set < 50%, "
-            TotalWarnings += 1
-
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Reads mapped to probe set"] < 50:
-            MajorWarnings = MajorWarnings + "mm10 Reads mapped to probe set < 50%, "
-            TotalWarnings += 1
-
-
+    
 
     df["Fraction of initial cell barcodes passing high occupancy GEM filtering"] = df["Fraction of initial cell barcodes passing high occupancy GEM filtering"].replace({",": ""}, regex=True)  # Remove commas
     df["Fraction of initial cell barcodes passing high occupancy GEM filtering"] = pd.to_numeric(df["Fraction of initial cell barcodes passing high occupancy GEM filtering"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
@@ -200,15 +156,7 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         if df.iloc[0]["Fraction of initial cell barcodes passing high occupancy GEM filtering"] < 90:
             MajorWarnings = MajorWarnings + "Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
             TotalWarnings += 1
-    elif args.genome == "GRCh38":
-        if df.iloc[0]["GRCh38 Fraction of initial cell barcodes passing high occupancy GEM filtering"] < 90:
-            MajorWarnings = MajorWarnings + "GRCh38 Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
-            TotalWarnings += 1
-    elif args.genome == "mm10":
-        if df.iloc[0]["mm10 Fraction of initial cell barcodes passing high occupancy GEM filtering"] < 90:
-            MajorWarnings = MajorWarnings + "mm10 Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
-            TotalWarnings += 1
- 
+    
             
     df["Warnings"] = Warnings
     df["MajorWarnings"] = MajorWarnings
