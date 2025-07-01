@@ -97,6 +97,54 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
         Warnings = Warnings + "Valid barcodes < 75%, "
         TotalWarnings += 1
     
+    df["Valid GEM barcodes"] = df["Valid GEM barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Valid GEM barcodes"] = pd.to_numeric(df["Valid GEM barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Valid GEM barcodes"] < 75:
+        Warnings = Warnings + "Valid GEM barcodes < 75%, "
+        TotalWarnings += 1    
+    
+    df["Valid probe barcodes"] = df["Valid probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Valid probe barcodes"] = pd.to_numeric(df["Valid probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Valid probe barcodes"] < 75:
+        Warnings = Warnings + "Valid probe barcodes < 75%, "
+        TotalWarnings += 1   
+    
+    df["Valid UMIs"] = df["Valid UMIs"].replace({",": ""}, regex=True)  # Remove commas
+    df["Valid UMIs"] = pd.to_numeric(df["Valid UMIs"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Valid UMIs"] < 75:
+        Warnings = Warnings + "Valid UMIs < 75%, "
+        TotalWarnings += 1
+        
+    df["Confidently mapped reads in cells"] = df["Confidently mapped reads in cells"].replace({",": ""}, regex=True)  # Remove commas
+    df["Confidently mapped reads in cells"] = pd.to_numeric(df["Confidently mapped reads in cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Confidently mapped reads in cells"] > 70:
+        Warnings = Warnings + "Confidently mapped reads in cells > 70%, "
+        TotalWarnings += 1
+               
+    df["Estimated UMIs from genomic DNA"] = df["Estimated UMIs from genomic DNA"].replace({",": ""}, regex=True)  # Remove commas
+    df["Estimated UMIs from genomic DNA"] = pd.to_numeric(df["Estimated UMIs from genomic DNA"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Estimated UMIs from genomic DNA"] > 1:
+        Warnings = Warnings + "Estimated UMIs from genomic DNA > 1%, "
+        TotalWarnings += 1        
+
+    df["Number of short reads skipped"] = df["Number of short reads skipped"].replace({",": ""}, regex=True)  # Remove commas
+    df["Number of short reads skipped"] = pd.to_numeric(df["Number of short reads skipped"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+
+    if df.iloc[0]["Number of short reads skipped"] > 0:
+        Warnings = Warnings + "Number of short reads skipped > 0, "
+        TotalWarnings += 1        
+ 
     df["Q30 barcodes"] = df["Q30 barcodes"].replace({",": ""}, regex=True)  # Remove commas
     df["Q30 barcodes"] = pd.to_numeric(df["Q30 barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
    
@@ -104,7 +152,15 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
     if df.iloc[0]["Q30 barcodes"] < 55:
         Warnings = Warnings + "Q30 barcodes < 55%, "
         TotalWarnings += 1
-  
+    
+    df["Q30 probe barcodes"] = df["Q30 probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Q30 probe barcodes"] = pd.to_numeric(df["Q30 probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+        
+    if df.iloc[0]["Q30 probe barcodes"] > 80:
+        Warnings = Warnings + "Q30 probe barcodes > 80%, "
+        TotalWarnings += 1
+        
     df["Q30 RNA read"] = df["Q30 RNA read"].replace({",": ""}, regex=True)  # Remove commas
     df["Q30 RNA read"] = pd.to_numeric(df["Q30 RNA read"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
      
@@ -157,6 +213,21 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
             MajorWarnings = MajorWarnings + "Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
             TotalWarnings += 1
     
+    df["Reads halfmapped to probe set"] = df["Reads halfmapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Reads halfmapped to probe set"] = pd.to_numeric(df["Reads halfmapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+      
+    if args.genome == None:
+        if df.iloc[0]["Reads halfmapped to probe set"] < 10:
+            Warnings = Warnings + "Reads halfmapped to probe set < 10%, "
+            TotalWarnings += 1
+    
+    df["Reads split-mapped to probe set"] = df["Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Reads split-mapped to probe set"] = pd.to_numeric(df["Reads split-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+      
+    if args.genome == None:
+        if df.iloc[0]["Reads split-mapped to probe set"] > 20:
+            Warnings = Warnings + "Reads split-mapped to probe set > 20%, "
+            TotalWarnings += 1
             
     df["Warnings"] = Warnings
     df["MajorWarnings"] = MajorWarnings
