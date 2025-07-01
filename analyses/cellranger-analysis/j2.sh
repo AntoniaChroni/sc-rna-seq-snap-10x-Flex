@@ -22,10 +22,6 @@ cellranger_parameters=$(cat ${rootdir}/project_parameters.Config.yaml | grep 'ce
 cellranger_parameters=${cellranger_parameters//\"/}  # Removes all double quotes
 echo "$cellranger_parameters"  # Output: This is a string with quotes.
 
-genome_name_cellranger=$(cat ${rootdir}/project_parameters.Config.yaml | grep 'genome_name_cellranger:' | awk '{print $2}')
-genome_name_cellranger=${genome_name_cellranger//\"/}  # Removes all double quotes
-echo "$genome_name_cellranger"  # Output: This is a string with quotes.
-
 ########################################################################
 # Create directories to save output files to
 mkdir -p ./results/03_cellranger_count_summary
