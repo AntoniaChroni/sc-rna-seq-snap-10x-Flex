@@ -11,6 +11,7 @@ The `submit-multiple-jobs.sh` script is designed to run the following two steps:
 Parameters according to the project and analysis strategy will need to be specified in the following scripts:
 - `../../project_parameters.Config.yaml`: define the `multi_config_dir`, `multi_config_file`, `cellranger_parameters`. For a list of genome references maintained and supported by the Bioinformatics Core at DNB, please review the [Genome References wiki page](https://github.com/stjude-dnb-binfcore/sc-rna-seq-snap/wiki/2.-Genome-References). Please submit an [issue](https://github.com/stjude-dnb-binfcore/sc-rna-seq-snap/issues) to request the path to the reference genome of preference. Otherwise, specify the path to the reference genome of your preference. 
 
+Please note that the `sample_prefix` in the YAML needs to be always set as `RNA_Multi` (default).
 
 - `j1.sh`: 
   - `--force-cells`: User can add flags as necessary for their analyses and compare alignments with CellRanger, e.g., by using `--force-cells=8000` to constrain the number of cells to be used for alignment. We recommend running by default and, after careful assessment, editing parameters. We have found that the default parameters set up here work well for most cases.
