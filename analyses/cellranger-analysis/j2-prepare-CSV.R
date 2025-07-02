@@ -31,7 +31,7 @@ analysis_dir <- file.path(root_dir, "analyses", "cellranger-analysis")
 # Input data
 input_dir <- yaml$data_dir
 #input_dir 
-results_dir <- file.path(input_dir, glue::glue("multi_run_{cellranger_parameters}"), "outs", "per_sample_outs") 
+results_dir <- file.path(input_dir, "outs", "per_sample_outs") 
 
 
 #################################################################################
@@ -48,7 +48,7 @@ print(sample_name)
 ##################################################################################################################################################################
 # Process each sample
 for (i in seq_along(sample_name)) {
-  sample_input_dir <- file.path(input_dir, glue::glue("multi_run_{cellranger_parameters}"), "outs", "per_sample_outs", sample_name[i]) 
+  sample_input_dir <- file.path(input_dir, "outs", "per_sample_outs", sample_name[i]) 
   #print(sample_input_dir)
   input_file <- c(dir(path = sample_input_dir,  pattern = "metrics_summary.csv", full.names = TRUE, recursive = TRUE))
   print(input_file)
