@@ -213,12 +213,12 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
             MajorWarnings = MajorWarnings + "Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
             TotalWarnings += 1
     
-    df["Reads halfmapped to probe set"] = df["Reads halfmapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads halfmapped to probe set"] = pd.to_numeric(df["Reads halfmapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    df["Reads half-mapped to probe set"] = df["Reads half-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Reads half-mapped to probe set"] = pd.to_numeric(df["Reads half-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
       
     if args.genome == None:
-        if df.iloc[0]["Reads halfmapped to probe set"] < 10:
-            Warnings = Warnings + "Reads halfmapped to probe set < 10%, "
+        if df.iloc[0]["Reads half-mapped to probe set"] < 10:
+            Warnings = Warnings + "Reads half-mapped to probe set < 10%, "
             TotalWarnings += 1
     
     df["Reads split-mapped to probe set"] = df["Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
