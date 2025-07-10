@@ -29,7 +29,6 @@ parser = argparse.ArgumentParser(description="This is a script that will summari
 #Creating the following optional arguments; some have default values
 parser.add_argument('--dir', type=dir_path, help='Data directory path that contains individually named cellranger count results for samples', required=True)
 parser.add_argument('--outdir', type=dir_path, help='Create all output files in the specified output directory. Please note that this directory must exist as the program will not create it.', required=True)
-parser.add_argument('--genome', type=str, help='Only specify the genome you want to recover data from a multiple genome alignment', required=False)
 
 #Converts argument strings to objects and assigns them as attributes of the namespace; e.g. --id -> args.id
 args = parser.parse_args()
@@ -37,7 +36,7 @@ args = parser.parse_args()
 
 MasterDF = pandas.DataFrame()
 
-for filename in glob.glob(os.path.join(args.dir, "*","test_metrics_summary_updated.csv")):
+for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.csv")):
     # print(filename)
     
     df = pandas.read_csv(filename)

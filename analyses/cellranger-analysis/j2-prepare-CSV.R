@@ -32,8 +32,8 @@ analysis_dir <- file.path(root_dir, "analyses", "cellranger-analysis")
 # Input data
 input_dir <- yaml$data_dir
 #input_dir 
-results_dir <- file.path(input_dir, "outs", "per_sample_outs") 
-
+results_dir <- file.path(input_dir, "outs", "per_sample_outs")
+#print(results_dir)
 
 #################################################################################
 # Read metadata file and define `sample_name`
