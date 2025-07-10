@@ -125,8 +125,8 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
     df["Confidently mapped reads in cells"] = pd.to_numeric(df["Confidently mapped reads in cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
    
 
-    if df.iloc[0]["Confidently mapped reads in cells"] > 70:
-        Warnings = Warnings + "Confidently mapped reads in cells > 70%, "
+    if df.iloc[0]["Confidently mapped reads in cells"] < 70:
+        Warnings = Warnings + "Confidently mapped reads in cells < 70%, "
         TotalWarnings += 1
                
     df["Estimated UMIs from genomic DNA"] = df["Estimated UMIs from genomic DNA"].replace({",": ""}, regex=True)  # Remove commas
@@ -157,8 +157,8 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
     df["Q30 probe barcodes"] = pd.to_numeric(df["Q30 probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
    
         
-    if df.iloc[0]["Q30 probe barcodes"] > 80:
-        Warnings = Warnings + "Q30 probe barcodes > 80%, "
+    if df.iloc[0]["Q30 probe barcodes"] < 80:
+        Warnings = Warnings + "Q30 probe barcodes < 80%, "
         TotalWarnings += 1
         
     df["Q30 RNA read"] = df["Q30 RNA read"].replace({",": ""}, regex=True)  # Remove commas
@@ -217,8 +217,8 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
     df["Reads half-mapped to probe set"] = pd.to_numeric(df["Reads half-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
       
     if args.genome == None:
-        if df.iloc[0]["Reads half-mapped to probe set"] < 10:
-            Warnings = Warnings + "Reads half-mapped to probe set < 10%, "
+        if df.iloc[0]["Reads half-mapped to probe set"] > 20:
+            Warnings = Warnings + "Reads half-mapped to probe set > 20%, "
             TotalWarnings += 1
     
     df["Reads split-mapped to probe set"] = df["Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
