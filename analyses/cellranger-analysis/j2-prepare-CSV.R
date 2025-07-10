@@ -1,4 +1,5 @@
-# Convert excelt o TSV file
+# Convert excel to TSV file
+# Authors: Antonia Chroni and Sharon Freshour
 
 # Load library
 suppressPackageStartupMessages({

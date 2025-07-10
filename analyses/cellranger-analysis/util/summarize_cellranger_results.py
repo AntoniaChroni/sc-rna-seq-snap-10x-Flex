@@ -3,7 +3,7 @@
 
 """
 Author:
-	Name: 			Antonia Chroni
+	Name: 			Antonia Chroni and Sharon Freshour
 	Email: 			antonia.chroni@stjude.org
 	Affiliation: 	St. Jude Children's Research Hospital, Memphis, TN
 	Date: 			May 27, 2025 
@@ -37,7 +37,7 @@ args = parser.parse_args()
 
 MasterDF = pandas.DataFrame()
 
-for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.csv")):
+for filename in glob.glob(os.path.join(args.dir, "*","test_metrics_summary_updated.csv")):
     # print(filename)
     
     df = pandas.read_csv(filename)
@@ -60,175 +60,244 @@ for filename in glob.glob(os.path.join(args.dir, "*","metrics_summary_updated.cs
     MajorWarnings = ""
     TotalWarnings = 0
     
-    
+    # For splitting into library and cell level metrics, will need to edit column names for condition checks
+    # For readability, order warnings based on order in 10x documentation, i.e. Library metrics and then Cells metrics
+    # If 10x documentation says cellranger raises a warning for a metric value, add them to MajorWarnings
+    # Otherwise if values do not lead to warnings in the cellranger output, then add them to Warnings
+    # That seems to be the pattern that was generally followed in the original summarize_cellranger_results.py script
+
+    #################################
+    ### LIBRARY-BASED QC METRICS ####
+
     # Assuming you already have a DataFrame 'df'
-    # Clean the "Cells" column by removing any non-numeric characters (e.g., commas)
-    df["Cells"] = df["Cells"].replace({",": ""}, regex=True)  # Remove commas
-    
-    # Convert the "Cells" column to a numeric type (int or float)
-    df["Cells"] = pd.to_numeric(df["Cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    # Clean the "Mean reads per cell" column by removing any non-numeric characters (e.g., commas)
+    df["Library: Mean reads per cell"] = df["Library: Mean reads per cell"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Mean reads per cell"] = pd.to_numeric(df["Library: Mean reads per cell"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
 
-    if args.genome == None:
-        if df.iloc[0]["Cells"] < 500:
-            Warnings = Warnings + "Cells < 500, "
+    if df.iloc[0]["Library: Mean reads per cell"] < 10000:
+        Warnings = Warnings + "Library: Mean reads per cell < 10000, "
+        TotalWarnings += 1
+
+
+    df["Library: Fraction of initial cell barcodes passing high occupancy GEM filtering"] = df["Library: Fraction of initial cell barcodes passing high occupancy GEM filtering"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Fraction of initial cell barcodes passing high occupancy GEM filtering"] = pd.to_numeric(df["Library: Fraction of initial cell barcodes passing high occupancy GEM filtering"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+    if df.iloc[0]["Library: Fraction of initial cell barcodes passing high occupancy GEM filtering"] < 90:
+            MajorWarnings = MajorWarnings + "Library: Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
             TotalWarnings += 1
 
+
+    df["Library: Number of short reads skipped"] = df["Library: Number of short reads skipped"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Number of short reads skipped"] = pd.to_numeric(df["Library: Number of short reads skipped"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+    if df.iloc[0]["Library: Number of short reads skipped"] > 0:
+        Warnings = Warnings + "Library: Number of short reads skipped > 0, "
+        TotalWarnings += 1  
+
+
+    df["Library: Q30 barcodes"] = df["Library: Q30 barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Q30 barcodes"] = pd.to_numeric(df["Library: Q30 barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+     
+    if df.iloc[0]["Library: Q30 barcodes"] < 55:
+        MajorWarnings = MajorWarnings + "Library: Q30 barcodes < 55%, "
+        TotalWarnings += 1
+
+
+    df["Library: Q30 GEM barcodes"] = df["Library: Q30 GEM barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Q30 GEM barcodes"] = pd.to_numeric(df["Library: Q30 GEM barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
     
-    if args.genome == None:
-        if df.iloc[0]["Cells"] < 100:
-            MajorWarnings = MajorWarnings + "Cells < 100, "
+    if df.iloc[0]["Library: Q30 GEM barcodes"] < 55:
+        MajorWarnings = MajorWarnings + "Library: Q30 GEM barcodes < 55%, "
+        TotalWarnings += 1
+    
+
+    df["Library: Q30 probe barcodes"] = df["Library: Q30 probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Q30 probe barcodes"] = pd.to_numeric(df["Library: Q30 probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+    if df.iloc[0]["Library: Q30 probe barcodes"] < 80:
+        Warnings = Warnings + "Library: Q30 probe barcodes < 80%, "
+        TotalWarnings += 1
+
+    
+    df["Library: Q30 UMI"] = df["Library: Q30 UMI"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Q30 UMI"] = pd.to_numeric(df["Library: Q30 UMI"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
+    if df.iloc[0]["Library: Q30 UMI"] < 75:
+        Warnings = Warnings + "Library: Q30 UMI < 75%, "
+        TotalWarnings += 1
+
+
+    df["Library: Q30 RNA read"] = df["Library: Q30 RNA read"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Q30 RNA read"] = pd.to_numeric(df["Library: Q30 RNA read"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
+    if df.iloc[0]["Library: Q30 RNA read"] < 65:
+        MajorWarnings = MajorWarnings + "Library: Q30 RNA read < 65%, "
+        TotalWarnings += 1
+
+
+    df["Library: Reads half-mapped to probe set"] = df["Library: Reads half-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Reads half-mapped to probe set"] = pd.to_numeric(df["Library: Reads half-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
+    if df.iloc[0]["Library: Reads half-mapped to probe set"] > 20:
+            MajorWarnings = MajorWarnings + "Library: Reads half-mapped to probe set > 20%, "
             TotalWarnings += 1
-    
-    
-    df["Mean reads per cell"] = df["Mean reads per cell"].replace({",": ""}, regex=True)  # Remove commas
-    df["Mean reads per cell"] = pd.to_numeric(df["Mean reads per cell"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
 
 
-    if df.iloc[0]["Mean reads per cell"] < 10000:
-        MajorWarnings = MajorWarnings + "Mean reads per cell < 10000, "
+    df["Library: Reads split-mapped to probe set"] = df["Library: Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Reads split-mapped to probe set"] = pd.to_numeric(df["Library: Reads split-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
+    if df.iloc[0]["Library: Reads split-mapped to probe set"] > 20:
+            MajorWarnings = MajorWarnings + "Library: Reads split-mapped to probe set > 20%, "
+            TotalWarnings += 1
+
+
+    df["Library: Reads mapped to probe set"] = df["Library: Reads mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Reads mapped to probe set"] = pd.to_numeric(df["Library: Reads mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Library: Reads mapped to probe set"] < 50:
+            MajorWarnings = MajorWarnings + "Library: Reads mapped to probe set < 50%, "
+            TotalWarnings += 1
+
+
+    df["Library: Reads confidently mapped to probe set"] = df["Library: Reads confidently mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Reads confidently mapped to probe set"] = pd.to_numeric(df["Library: Reads confidently mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    
+    if df.iloc[0]["Library: Reads confidently mapped to probe set"] < 50:
+            Warnings = Warnings + "Library: Reads confidently mapped to probe set < 50%, "
+            TotalWarnings += 1
+            
+         
+    df["Library: Reads confidently mapped to filtered probe set"] = df["Library: Reads confidently mapped to filtered probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Reads confidently mapped to filtered probe set"] = pd.to_numeric(df["Library: Reads confidently mapped to filtered probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+     
+    if df.iloc[0]["Library: Reads confidently mapped to filtered probe set"] < 50:
+            Warnings = Warnings + "Library: Reads confidently mapped to filtered probe set < 50%, "
+            TotalWarnings += 1
+
+
+    df["Library: Valid barcodes"] = df["Library: Valid barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Valid barcodes"] = pd.to_numeric(df["Library: Valid barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+   
+    if df.iloc[0]["Library: Valid barcodes"] < 75:
+        MajorWarnings = MajorWarnings + "Library: Valid barcodes < 75%, "
         TotalWarnings += 1
-    
-       
-    df["Valid barcodes"] = df["Valid barcodes"].replace({",": ""}, regex=True)  # Remove commas
-    df["Valid barcodes"] = pd.to_numeric(df["Valid barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
    
 
-    if df.iloc[0]["Valid barcodes"] < 75:
-        Warnings = Warnings + "Valid barcodes < 75%, "
-        TotalWarnings += 1
-    
-    df["Valid GEM barcodes"] = df["Valid GEM barcodes"].replace({",": ""}, regex=True)  # Remove commas
-    df["Valid GEM barcodes"] = pd.to_numeric(df["Valid GEM barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
+    df["Library: Valid GEM barcodes"] = df["Library: Valid GEM barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Valid GEM barcodes"] = pd.to_numeric(df["Library: Valid GEM barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
 
-    if df.iloc[0]["Valid GEM barcodes"] < 75:
-        Warnings = Warnings + "Valid GEM barcodes < 75%, "
+    if df.iloc[0]["Library: Valid GEM barcodes"] < 75:
+        MajorWarnings = MajorWarnings + "Library: Valid GEM barcodes < 75%, "
         TotalWarnings += 1    
     
-    df["Valid probe barcodes"] = df["Valid probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
-    df["Valid probe barcodes"] = pd.to_numeric(df["Valid probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
 
-    if df.iloc[0]["Valid probe barcodes"] < 75:
-        Warnings = Warnings + "Valid probe barcodes < 75%, "
+    df["Library: Valid probe barcodes"] = df["Library: Valid probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Valid probe barcodes"] = pd.to_numeric(df["Library: Valid probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Library: Valid probe barcodes"] < 75:
+        MajorWarnings = MajorWarnings + "Library: Valid probe barcodes < 75%, "
         TotalWarnings += 1   
     
-    df["Valid UMIs"] = df["Valid UMIs"].replace({",": ""}, regex=True)  # Remove commas
-    df["Valid UMIs"] = pd.to_numeric(df["Valid UMIs"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
 
-    if df.iloc[0]["Valid UMIs"] < 75:
-        Warnings = Warnings + "Valid UMIs < 75%, "
+    df["Library: Valid UMIs"] = df["Library: Valid UMIs"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Valid UMIs"] = pd.to_numeric(df["Library: Valid UMIs"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Library: Valid UMIs"] < 75:
+        MajorWarnings = MajorWarnings + "Library: Valid UMIs < 75%, "
         TotalWarnings += 1
-        
-    df["Confidently mapped reads in cells"] = df["Confidently mapped reads in cells"].replace({",": ""}, regex=True)  # Remove commas
-    df["Confidently mapped reads in cells"] = pd.to_numeric(df["Confidently mapped reads in cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
 
-    if df.iloc[0]["Confidently mapped reads in cells"] < 70:
-        Warnings = Warnings + "Confidently mapped reads in cells < 70%, "
+
+    df["Library: Confidently mapped reads in cells"] = df["Library: Confidently mapped reads in cells"].replace({",": ""}, regex=True)  # Remove commas
+    df["Library: Confidently mapped reads in cells"] = pd.to_numeric(df["Library: Confidently mapped reads in cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Library: Confidently mapped reads in cells"] < 70:
+        Warnings = Warnings + "Library: Confidently mapped reads in cells < 70%, "
         TotalWarnings += 1
-               
-    df["Estimated UMIs from genomic DNA"] = df["Estimated UMIs from genomic DNA"].replace({",": ""}, regex=True)  # Remove commas
-    df["Estimated UMIs from genomic DNA"] = pd.to_numeric(df["Estimated UMIs from genomic DNA"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
 
-    if df.iloc[0]["Estimated UMIs from genomic DNA"] > 1:
-        Warnings = Warnings + "Estimated UMIs from genomic DNA > 1%, "
-        TotalWarnings += 1        
-
-    df["Number of short reads skipped"] = df["Number of short reads skipped"].replace({",": ""}, regex=True)  # Remove commas
-    df["Number of short reads skipped"] = pd.to_numeric(df["Number of short reads skipped"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
-
-    if df.iloc[0]["Number of short reads skipped"] > 0:
-        Warnings = Warnings + "Number of short reads skipped > 0, "
-        TotalWarnings += 1        
- 
-    df["Q30 barcodes"] = df["Q30 barcodes"].replace({",": ""}, regex=True)  # Remove commas
-    df["Q30 barcodes"] = pd.to_numeric(df["Q30 barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
-        
-    if df.iloc[0]["Q30 barcodes"] < 55:
-        Warnings = Warnings + "Q30 barcodes < 55%, "
-        TotalWarnings += 1
+    #################################    
     
-    df["Q30 probe barcodes"] = df["Q30 probe barcodes"].replace({",": ""}, regex=True)  # Remove commas
-    df["Q30 probe barcodes"] = pd.to_numeric(df["Q30 probe barcodes"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
-        
-    if df.iloc[0]["Q30 probe barcodes"] < 80:
-        Warnings = Warnings + "Q30 probe barcodes < 80%, "
+    #################################        
+    ### CELLS-BASED QC METRICS ###
+
+    # Assuming you already have a DataFrame 'df'
+    # Clean the "Cells" column by removing any non-numeric characters (e.g., commas)
+    df["Cells: Cells"] = df["Cells: Cells"].replace({",": ""}, regex=True)  # Remove commas
+    
+    # Convert the "Cells: Cells" column to a numeric type (int or float)
+    df["Cells: Cells"] = pd.to_numeric(df["Cells: Cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Cells: Cells"] < 500:
+        Warnings = Warnings + "Cells: Cells < 500, "
         TotalWarnings += 1
-        
-    df["Q30 RNA read"] = df["Q30 RNA read"].replace({",": ""}, regex=True)  # Remove commas
-    df["Q30 RNA read"] = pd.to_numeric(df["Q30 RNA read"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+  
+    if df.iloc[0]["Cells: Cells"] < 100:
+        MajorWarnings = MajorWarnings + "Cells: Cells < 100, "
+        TotalWarnings += 1
+
+
+    df["Cells: Confidently mapped reads in cells"] = df["Cells: Confidently mapped reads in cells"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Confidently mapped reads in cells"] = pd.to_numeric(df["Cells: Confidently mapped reads in cells"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Cells: Confidently mapped reads in cells"] < 70:
+        Warnings = Warnings + "Cells: Confidently mapped reads in cells < 70%, "
+        TotalWarnings += 1
+
+
+    df["Cells: Reads half-mapped to probe set"] = df["Cells: Reads half-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Reads half-mapped to probe set"] = pd.to_numeric(df["Cells: Reads half-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+      
+    if df.iloc[0]["Cells: Reads half-mapped to probe set"] > 20:
+            MajorWarnings = MajorWarnings + "Cells: Reads half-mapped to probe set > 20%, "
+            TotalWarnings += 1
+
+
+    df["Cells: Reads split-mapped to probe set"] = df["Cells: Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Reads split-mapped to probe set"] = pd.to_numeric(df["Cells: Reads split-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
      
-    if df.iloc[0]["Q30 RNA read"] < 65:
-        Warnings = Warnings + "Q30 RNA read < 65%, "
-        TotalWarnings += 1
-    
+    if df.iloc[0]["Cells: Reads split-mapped to probe set"] > 20:
+            MajorWarnings = MajorWarnings + "Cells: Reads split-mapped to probe set > 20%, "
+            TotalWarnings += 1
+
+
+    df["Cells: Reads mapped to probe set"] = df["Cells: Reads mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Reads mapped to probe set"] = pd.to_numeric(df["Cells: Reads mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Cells: Reads mapped to probe set"] < 50:
+            MajorWarnings = MajorWarnings + "Cells: Reads mapped to probe set < 50%, "
+            TotalWarnings += 1
+
+
+    df["Cells: Reads confidently mapped to probe set"] = df["Cells: Reads confidently mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Reads confidently mapped to probe set"] = pd.to_numeric(df["Cells: Reads confidently mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
       
-    df["Q30 UMI"] = df["Q30 UMI"].replace({",": ""}, regex=True)  # Remove commas
-    df["Q30 UMI"] = pd.to_numeric(df["Q30 UMI"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-      
-    if df.iloc[0]["Q30 UMI"] < 75:
-        Warnings = Warnings + "Q30 UMI < 75%, "
-        TotalWarnings += 1
-    
-          
-    df["Reads confidently mapped to probe set"] = df["Reads confidently mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads confidently mapped to probe set"] = pd.to_numeric(df["Reads confidently mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-      
-    if args.genome == None:
-        if df.iloc[0]["Reads confidently mapped to probe set"] < 50:
-            Warnings = Warnings + "Reads confidently mapped to probe set < 50%, "
+    if df.iloc[0]["Cells: Reads confidently mapped to probe set"] < 50:
+            Warnings = Warnings + "Cells: Reads confidently mapped to probe set < 50%, "
             TotalWarnings += 1
             
          
-    df["Reads confidently mapped to filtered probe set"] = df["Reads confidently mapped to filtered probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads confidently mapped to filtered probe set"] = pd.to_numeric(df["Reads confidently mapped to filtered probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-      
-    if args.genome == None:
-        if df.iloc[0]["Reads confidently mapped to filtered probe set"] < 50:
-            MajorWarnings = MajorWarnings + "Reads confidently mapped to filtered probe set < 50%, "
-            TotalWarnings += 1
+    df["Cells: Reads confidently mapped to filtered probe set"] = df["Cells: Reads confidently mapped to filtered probe set"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Reads confidently mapped to filtered probe set"] = pd.to_numeric(df["Cells: Reads confidently mapped to filtered probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
     
-         
-    df["Reads mapped to probe set"] = df["Reads mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads mapped to probe set"] = pd.to_numeric(df["Reads mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+    if df.iloc[0]["Cells: Reads confidently mapped to filtered probe set"] < 50:
+            Warnings = Warnings + "Cells: Reads confidently mapped to filtered probe set < 50%, "
+            TotalWarnings += 1
 
-    if args.genome == None:
-        if df.iloc[0]["Reads mapped to probe set"] < 50:
-            MajorWarnings = MajorWarnings + "Reads mapped to probe set < 50%, "
-            TotalWarnings += 1
-    
 
-    df["Fraction of initial cell barcodes passing high occupancy GEM filtering"] = df["Fraction of initial cell barcodes passing high occupancy GEM filtering"].replace({",": ""}, regex=True)  # Remove commas
-    df["Fraction of initial cell barcodes passing high occupancy GEM filtering"] = pd.to_numeric(df["Fraction of initial cell barcodes passing high occupancy GEM filtering"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-   
+    # Note whether to use the Library metric value or Cells metric value for this metric depends of whether the data is singlepelx or multiplex
+    # For multiplex data the Cells value should be used
+    # For singleplex data the Library value should be used
+    # Since the pipeline currently appears to being use for multiplex data, will check the Cells value for this metric
+    # Possibly keep this in mind for future use of the pipeline though
 
-    if args.genome == None:
-        if df.iloc[0]["Fraction of initial cell barcodes passing high occupancy GEM filtering"] < 90:
-            MajorWarnings = MajorWarnings + "Fraction of initial cell barcodes passing high occupancy GEM filtering < 90%, "
-            TotalWarnings += 1
-    
-    df["Reads half-mapped to probe set"] = df["Reads half-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads half-mapped to probe set"] = pd.to_numeric(df["Reads half-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-      
-    if args.genome == None:
-        if df.iloc[0]["Reads half-mapped to probe set"] > 20:
-            Warnings = Warnings + "Reads half-mapped to probe set > 20%, "
-            TotalWarnings += 1
-    
-    df["Reads split-mapped to probe set"] = df["Reads split-mapped to probe set"].replace({",": ""}, regex=True)  # Remove commas
-    df["Reads split-mapped to probe set"] = pd.to_numeric(df["Reads split-mapped to probe set"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
-      
-    if args.genome == None:
-        if df.iloc[0]["Reads split-mapped to probe set"] > 20:
-            Warnings = Warnings + "Reads split-mapped to probe set > 20%, "
-            TotalWarnings += 1
-            
+    df["Cells: Estimated UMIs from genomic DNA"] = df["Cells: Estimated UMIs from genomic DNA"].replace({",": ""}, regex=True)  # Remove commas
+    df["Cells: Estimated UMIs from genomic DNA"] = pd.to_numeric(df["Cells: Estimated UMIs from genomic DNA"], errors="coerce")  # This will convert strings to numbers, and non-convertible strings will be NaN
+
+    if df.iloc[0]["Cells: Estimated UMIs from genomic DNA"] > 1:
+        Warnings = Warnings + "Cells: Estimated UMIs from genomic DNA > 1%, "
+        TotalWarnings += 1  
+    #################################
+
+
     df["Warnings"] = Warnings
     df["MajorWarnings"] = MajorWarnings
     df["Total Warnings"] = TotalWarnings
