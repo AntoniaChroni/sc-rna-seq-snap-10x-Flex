@@ -52,7 +52,7 @@ for (i in seq_along(sample_name)) {
   #print(sample_input_dir)
   input_file <- c(dir(path = sample_input_dir,  pattern = "metrics_summary.csv", full.names = TRUE, recursive = TRUE))
   print(input_file)
- 
+  
   if (length(input_file) == 0) {
     warning(glue::glue("No metrics_summary.csv found for sample {sample_name[i]}"))
     next
@@ -62,15 +62,15 @@ for (i in seq_along(sample_name)) {
   }
   
   # No numeric conversion is done — we’re preserving original text like "33,635 (81.37%)".
-  
-  processed_input_df <- read.csv(input_file, header = TRUE, stringsAsFactors = FALSE) %>%
-    select(Metric.Name, Metric.Value) %>%
-    rename(Metric_Name = dplyr::matches("Metric.?Name"),
-           Metric_Value = dplyr::matches("Metric.?Value")) %>%
-    pivot_wider(names_from = Metric_Name, values_from = Metric_Value, values_fn = dplyr::first) %>% # or `list` if you want to preserve duplicates
+  processed_input_df <- read.csv(input_file, header = TRUE, stringsAsFactors = FALSE) %>% 
+    mutate(Category.Metric.Name = paste0(Category, ": ", Metric.Name)) %>% 
+    select(Category.Metric.Name, Metric.Value) %>% 
+    rename(Category_Metric_Name = dplyr::matches("Category.?Metric.?Name"), Metric_Value = dplyr::matches("Metric.?Value")) %>% 
+    pivot_wider(names_from = Category_Metric_Name, values_from = Metric_Value, values_fn = dplyr::first) %>% # or `list` if you want to preserve duplicates
     write_csv(file.path(results_dir, sample_name[i], paste0("metrics_summary_updated.csv")))   # save data 
   
   head(processed_input_df)
+  
 }
 
 ##################################################################################################################################################################
