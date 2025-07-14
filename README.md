@@ -37,6 +37,8 @@ To begin using the **Snap-10x-Flex** pipeline, follow the instructions below to 
 
 For best practices and detailed guidelines on effectively using the **Snap-10x-Flex** pipeline, please review the [Tutorial and documentation for the snap pipeline](https://github.com/stjude-dnb-binfcore/trainings/blob/main/courses/sc-rna-seq-snap-repo/tutorial/snap-tutorial-docs).
 
+Note: While the tutorial outlines general best practices for running the pipeline, there may be differences in the specific procedures used for the Flex version. Please refer to any version-specific documentation when available.
+
 ### Preparing project metadata
 
 The pipeline requires a TSV file containing essential metadata for cohort analysis. The file must be named `project_metadata.tsv`. It can include one or more samples, as long as it contains at least the following columns in this exact order: `ID`, `SAMPLE`, and `FASTQ`. The `ID` column must contain unique values. The `SAMPLE` column must contain the `seq_submission_code` along with the ID, e.g., `seq_submission_code1_sample1` or the corresponding library name. The `FASTQ` column must contain the file path to the fastq files. For samples with top-ups or multiple technical replicates, list all associated library names and FASTQ file paths in the same row, using commas to separate each path. Additional metadata columns can be added and arranged as needed by the user (though not required).
@@ -45,6 +47,7 @@ The file can be stored anywhere, but its filepath must be specified in the `proj
 
 For user convenience, an example [project_metadata.tsv](https://github.com/stjude-dnb-binfcore/sc-rna-seq-snap-10x-Flex/blob/main/data/project_metadata) file is provided.
 
+Additionally, a separate TSV file is required with a different structure to run the `fastqc-analysis` module. See the [README.md](https://github.com/stjude-dnb-binfcore/sc-rna-seq-snap-10x-Flex/blob/main/analyses/fastqc-analysis/README.md).
 
 ### How to Use the Repository
 
