@@ -231,7 +231,7 @@ fastqc_overrepresented_df <- read.table(fastqc_overrepresented_results_file, hea
 
 #### Per Base Sequence Content
 - Non-greyish bars (i.e. bars with sections of distinct colors) indicates a **Non-Uniform Distribution** with one or more nucleotides dominating at specific positions.
-- SSharp spikes in specific nucleotides can indicate **adapter contamination** or other sources of bias.
+- Sharp spikes in specific nucleotides can indicate **adapter contamination** or other sources of bias.
 
 #### Per Sequence GC Content
 - If there is **no bell-shaped curve** (normal distribution), which can be caused by:
